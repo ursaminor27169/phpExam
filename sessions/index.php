@@ -9,7 +9,11 @@ use App\ExpertSessionQuestion;
 use App\ExpertSessionLink;
 
 $expert_session = ExpertSession::FindOrFail($_GET['session_id']); //Не нашло сессию? уйди отсюда
-
+function clo( $data ){
+    echo '<script>';
+    echo 'console.log('. json_encode( $data ) .')';
+    echo '</script>';
+}
 if ($post) {
     $options = json_decode($_POST['options'], 1);
     if (isset($_POST['add_question'])) {
@@ -29,7 +33,12 @@ if ($post) {
     } elseif (isset($_POST['close_session'])) {
         $expert_session->close();
     } elseif (isset($_POST['delete_session'])) {
-        $expert_session->delete();
+        try {
+            $expert_session->delete();
+        } catch (Exception $e) {
+            clo($e);
+            header('Location: /');
+        }
     }
     if (empty($error)) header('Location: /sessions?session_id=' . $expert_session->id); //Защита от повторной отправки формы
 }
@@ -112,10 +121,13 @@ if ($post) {
             <div class="container">
                 <?php
                 $link_number = 1;
-                foreach ($expert_session->links as $expert_session_link) { ?>
+                foreach ($expert_session->links as $expert_session_link) {
+                    clo($expert_session_link);
+                    ?>
+
                     <form method="post" class="link-item">
                         <input name="link_id" type="hidden" value="<?= $expert_session_link->id; ?>">
-                        <a class="link-item_label btn-sm" href="http://it4u.fun/session?random_id=<?= $expert_session_link->random_id; ?>">it4u.fun/session?random_id=<?= $expert_session_link->random_id; ?></a>
+                        <a class="link-item_label btn-sm" href="/session?random_id=<?= $expert_session_link->random_id; ?>">/session?random_id=<?= $expert_session_link->random_id; ?></a>
                         <a class="btn btn-primary btn-sm" href="/answers?link_id=<?= $expert_session_link->id; ?>">Ответы</a>
                         <button name="delete_link" class="btn btn-outline-danger btn-sm">Удалить ссылку</button>
                     </form>

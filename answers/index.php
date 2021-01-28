@@ -12,6 +12,9 @@ $expert_session_link = ExpertSessionLink::Find($_GET['link_id']);
 
 $expert_session = ExpertSession::Find($expert_session_link->expert_session_id);
 
+
+
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -62,6 +65,18 @@ $expert_session = ExpertSession::Find($expert_session_link->expert_session_id);
     <h2 class="mt-4 mb-4">
         Ответы
     </h2>
+    <?php
+    function console_log( $data ){
+        echo '<script>';
+        echo 'console.log('. json_encode( $data ) .')';
+        echo '</script>';
+    }
+
+    if (sizeof($expert_session_link->answers) == 0) { ?>
+    <h2 class="mt-4 mb-4">
+        Их пока нет:(
+    </h2>
+    <?php } else { ?>
     <table class="table table-striped">
         <thead>
         <tr>
@@ -103,7 +118,8 @@ $expert_session = ExpertSession::Find($expert_session_link->expert_session_id);
             $answer_count++;
         }
         $avg_points = $points / sizeof($questions);
-        $total_avg_points = $total_points / sizeof($expert_session->questions()->count());
+
+        $total_avg_points = $total_points / $expert_session->questions->count();
         ?>
         </tbody>
     </table>
@@ -130,6 +146,7 @@ $expert_session = ExpertSession::Find($expert_session_link->expert_session_id);
             </div>
         </div>
     </div>
+    <?php } ?>
 </main>
 <footer class="container-fluid footer">
     <p class="footer-item lead">

@@ -4,10 +4,14 @@ require $_SERVER['DOCUMENT_ROOT'].'/config/database.php';
 
 use App\UsersController;
 use App\ExpertSession;
-
+function clo( $data ){
+    echo '<script>';
+    echo 'console.log('. json_encode( $data ) .')';
+    echo '</script>';
+}
 if ($post) {
     if (isset($_POST['create'])) {
-        $expert_session = ExpertSession::create(['title' => $_POST['title'], 'user_id' => $_SESSION['user']->id]); //Создаем экспертную сессию
+        $expert_session = ExpertSession::create(['title' => $_POST['title'], 'user_id' => $_SESSION['user']['id']]); //Создаем экспертную сессию
         header('Location: /sessions?session_id=' . $expert_session->id); //Сразу кидаем на её страницу
     }
 }
@@ -74,7 +78,8 @@ if ($post) {
         <br>
         <h3 class="modal-title mt-5 mb-4">Здесь вы можете посмотреть все созданные сессии: </h3>
         <ul class="container">
-            <?php foreach ($_SESSION['user']->ExpertSessions as $expert_session) { ?>
+            <?php
+            foreach ($_SESSION['user']->ExpertSessions as $expert_session) { ?>
                 <li>
                     <div class="session-item">
                         <h6 class="mr-4"><?= $expert_session->title; ?></h6>
